@@ -20,6 +20,25 @@ module.exports = {
                 msg: err.messsage
             })
         })
+    },
+    create_caption: (req, res) => {
+        axios({
+            method: 'POST',
+            url: 'https://api.imgflip.com/caption_image',
+            data: {
+                template_id: req.body.templateId,
+                username: req.body.username,
+                password: req.body.password,
+                text0: req.body.caption
+            }
+        })
+            .then(response => {
+                res.status(200).json({
+                    response
+                })
+            })
+            .catch(err => {
+                errors: err.messsage
+            })
     }
-
 }
