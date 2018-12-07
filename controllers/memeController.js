@@ -1,5 +1,5 @@
 const axios = require('axios')
-
+const request = require('request')
 
 module.exports = {
     getOneMeme: (req, res) => {
@@ -27,18 +27,56 @@ module.exports = {
             url: 'https://api.imgflip.com/caption_image',
             data: {
                 template_id: req.body.templateId,
-                username: req.body.username,
-                password: req.body.password,
-                text0: req.body.caption
+                username: 'RobertArifin',
+                password: '12345',
+                text0: 'test',
+                text1: 'tai'
             }
         })
-            .then(response => {
-                res.status(200).json({
-                    response
+        .then(response => {
+            console.log(response.data, '---')
+            res.status(200).json({
+                response
+            })
+        })
+        .catch(err => {
+            console.log(err)
+           res.status(500).json( {
+               err: 'Please try again'
+           })
+        })
+    },
+
+    findMeme: (req,res) => {
+        let options = {
+            method: 'GET',
+            url: 'http://version1.api.memegenerator.net//Instances_Search',
+            headers: {
+              'User-Agent': 'request'
+            },
+            qs: {
+                q: req.body.value,
+                apiKey: 'c68823d6-2cac-45cc-9af4-bbd3caaf22c6',
+                pageSize: 25
+            }
+        }
+
+        request(options, (error, response, body) => {
+            if (error) {
+                res.status(500).json( {
+                    err: 'Pls try again'
                 })
-            })
-            .catch(err => {
-                errors: err.messsage
-            })
+            } else {
+                body = JSON.parse(body)
+                let pos = Math.floor(Math.random() * 25)
+                let randomMeme = body.result[pos]
+
+                res.status(200).json( {
+                    meme: randomMeme,
+                    allMeme: body.result
+                })
+            }
+        })
+
     }
 }
