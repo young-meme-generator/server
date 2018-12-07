@@ -1,5 +1,6 @@
 const axios = require('axios')
 const request = require('request')
+const download = require('image-downloader')
 
 module.exports = {
     getOneMeme: (req, res) => {
@@ -77,6 +78,28 @@ module.exports = {
                 })
             }
         })
+    },
 
+    download: (req, res) => {
+        options = {
+            url: req.body.url,
+            dest: './photo.jpg'
+          }
+
+          console.log('woi')
+          console.log(options)
+        download.image(options)
+        .then(({ filename, image }) => {
+            res.status(201).json( {
+                msg: 'Image successfully download'
+            })
+        })
+        .catch((err) => {
+            console.log(err);
+            
+            res.status(500).json( {
+                msg: 'Failed to save the image'
+            })
+        })
     }
 }
