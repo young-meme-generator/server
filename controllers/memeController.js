@@ -1,23 +1,25 @@
 const axios = require('axios')
-
+const request = require('request')
 
 module.exports = {
-    get_memes: (req, res) => {
+    getOneMeme: (req, res) => {
         axios({
             method: 'GET',
             url: 'https://api.imgflip.com/get_memes'
         })
-            .then(function (response) {
-                console.log(response.data.data)
-                res.status(200).json({
-                    data: response.data.data
-                })
+        .then(function (response) {
+            let pos = Math.floor(Math.random() * 100)
+            let meme = response.data.data.memes[pos]
+
+            res.status(200).json({
+                meme: meme
             })
-            .catch(err => {
-                res.status(400).json({
-                    msg: err.messsage
-                })
+        })
+        .catch(err => {
+            res.status(400).json({
+                msg: err.messsage
             })
+        })
     },
     create_caption: (req, res) => {
         axios({
@@ -25,19 +27,56 @@ module.exports = {
             url: 'https://api.imgflip.com/caption_image',
             data: {
                 template_id: req.body.templateId,
-                username: req.body.username,
-                password: req.body.password,
-                text0: req.body.caption
+                username: 'RobertArifin',
+                password: '12345',
+                text0: 'test',
+                text1: 'tai'
             }
         })
-            .then(response => {
-                res.status(200).json({
-                    response
-                })
+        .then(response => {
+            console.log(response.data, '---')
+            res.status(200).json({
+                response
             })
-            .catch(err => {
-                errors: err.messsage
-            })
-    }
+        })
+        .catch(err => {
+            console.log(err)
+           res.status(500).json( {
+               err: 'Please try again'
+           })
+        })
+    },
 
+    findMeme: (req,res) => {
+        let options = {
+            method: 'GET',
+            url: 'http://version1.api.memegenerator.net//Instances_Search',
+            headers: {
+              'User-Agent': 'request'
+            },
+            qs: {
+                q: req.body.value,
+                apiKey: 'c68823d6-2cac-45cc-9af4-bbd3caaf22c6',
+                pageSize: 25
+            }
+        }
+
+        request(options, (error, response, body) => {
+            if (error) {
+                res.status(500).json( {
+                    err: 'Pls try again'
+                })
+            } else {
+                body = JSON.parse(body)
+                let pos = Math.floor(Math.random() * 25)
+                let randomMeme = body.result[pos]
+
+                res.status(200).json( {
+                    meme: randomMeme,
+                    allMeme: body.result
+                })
+            }
+        })
+
+    }
 }
